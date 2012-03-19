@@ -14,6 +14,10 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
+    
+    
+    UIImageView *background = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"radial_shows_bckg.png"]];
+    [self.view addSubview:background];
 }
 
 @end
