@@ -7,6 +7,7 @@
 //
 
 #import "ShowViewController.h"
+#import "OBShapedButton.h"
 
 @interface ShowViewController (private)
 - (void)addButtonToView:(UIView *)view forImageName:(NSString *)name;
@@ -38,10 +39,10 @@
 #pragma mark Private Methods
 
 - (void)addButtonToView:(UIView *)view forImageName:(NSString *)name {
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *button = [OBShapedButton buttonWithType:UIButtonTypeCustom];
     button.frame = CGRectMake(0, 0, 306, 306);
     [button setImage:[UIImage imageNamed:name] forState:UIControlStateNormal];
-    [button setImage:[UIImage imageNamed:@"todayshow_press.png"] forState:UIControlStateHighlighted];
+    //[button setImage:[UIImage imageNamed:@"todayshow_press.png"] forState:UIControlStateHighlighted];
     [view addSubview:button];
 }
 
