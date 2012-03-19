@@ -6,9 +6,9 @@
 //  Copyright (c) 2012 RandomType. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "ShowViewController.h"
 
-@implementation ViewController
+@implementation ShowViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
