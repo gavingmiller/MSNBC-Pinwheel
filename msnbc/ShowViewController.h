@@ -10,6 +10,4 @@
 
 @interface ShowViewController : UIViewController
 
-@property (nonatomic, strong) UIImageView *highlight;
-
 @end

@@ -10,16 +10,20 @@
 #import "OBShapedButton.h"
 
 @interface ShowViewController (private)
-- (void)addButtonToView:(UIView *)view forImageName:(NSString *)name setEnabledTo:(BOOL)enabled;
+- (void)addButtonToView:(UIView *)view forImageName:(NSString *)name withIndex:(int)index setEnabledTo:(BOOL)enabled;
 - (void)buttonTouched;
 - (void)blink:(UIButton *)sender;
-- (void)show:(UIButton *)sender;
-- (void)hide;
+- (UIImageView *)show:(UIButton *)sender;
+- (void)hide:(UIImageView *)highlight;
+
+- (NSArray *)highlights;
 @end
 
 @implementation ShowViewController
 
-@synthesize highlight = _highlight;
+- (NSArray *)highlights {
+    return [NSArray arrayWithObjects:@"dateline_press.png", @"hardball_press.png", @"meetthepress_press.png", @"morningjoe_press.png", @"nightlynews_press.png", @"rachelmaddow_press.png", @"todayshow_press.png", nil];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -32,13 +36,14 @@
     [pinWheel setCenter:center];
     
     NSArray *shows = [NSArray arrayWithObjects:@"dateline_rest.png", @"hardball_rest.png", @"meetthepress_rest.png", @"morningjoe_rest.png", @"nightlynews_rest.png", @"rachelmaddow_rest.png", @"todayshow_rest.png", nil];
-    for (NSString *show in shows) {
-        [self addButtonToView:pinWheel forImageName:show setEnabledTo:true];
+    for (int i = 0; i < [shows count]; i++) {
+        NSString *show = [shows objectAtIndex:i];
+        [self addButtonToView:pinWheel forImageName:show withIndex:i setEnabledTo:true];
     }
 
     NSArray *disabledButtons = [NSArray arrayWithObjects:@"shows_disabled0.png", @"shows_disabled1.png", @"shows_disabled2.png", @"shows_disabled3.png", @"shows_disabled4.png", nil];
     for (NSString *disabledButton in disabledButtons) {
-        [self addButtonToView:pinWheel forImageName:disabledButton setEnabledTo:false];        
+        [self addButtonToView:pinWheel forImageName:disabledButton withIndex:-1 setEnabledTo:false];        
     }
     
     [self.view addSubview:pinWheel];
@@ -47,39 +52,42 @@
 #pragma mark -
 #pragma mark Private Methods
 
-- (void)addButtonToView:(UIView *)view forImageName:(NSString *)name setEnabledTo:(BOOL)enabled {
+- (void)addButtonToView:(UIView *)view forImageName:(NSString *)name withIndex:(int)index setEnabledTo:(BOOL)enabled {
     UIButton *button = [OBShapedButton buttonWithType:UIButtonTypeCustom];
-    button.frame = CGRectMake(0, 0, 306, 306);
+
+    [button setFrame:CGRectMake(0, 0, 306, 306)];
+    [button setTag:index];
+    [button setUserInteractionEnabled:enabled];
     [button setImage:[UIImage imageNamed:name] forState:UIControlStateNormal];
-    
+    [button setAdjustsImageWhenHighlighted:false];
     [button addTarget:self action:@selector(buttonTouched:) forControlEvents:UIControlEventTouchUpInside];
-    button.userInteractionEnabled = enabled;
-    button.adjustsImageWhenHighlighted = false;
+
     [view addSubview:button];
 }
 
-// Make this code more robust without the need to hold onto the highlight image.
-// http://stackoverflow.com/questions/1584455/how-to-use-performselectorwithobjectafterdelay-on-a-method-with-multiple-argu
 - (void)buttonTouched:(UIButton *)sender {
-    NSLog(@"%@", sender);
-    self.highlight = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"hardball_press.png"]];    
-
     [self blink:sender];
     [self performSelector:@selector(blink:) withObject:sender afterDelay:0.35];
 }
 
 - (void)blink:(UIButton *)sender {
-    [self show:sender];
-    [self performSelector:@selector(hide) withObject:nil afterDelay:0.20];
+    UIImageView *highlight = [self show:sender];
+    [self performSelector:@selector(hide:) withObject:highlight afterDelay:0.20];
 }
 
-- (void)show:(UIButton *)sender {
-    self.highlight.frame = sender.frame;
-    [sender addSubview:self.highlight];
+- (UIImageView *)show:(UIButton *)sender {
+    int highlightIndex = [sender tag];
+    NSString *highlightImageName = [[self highlights] objectAtIndex:highlightIndex];
+    UIImageView *highlight = [[UIImageView alloc] initWithImage:[UIImage imageNamed:highlightImageName]];    
+    
+    highlight.frame = sender.frame;
+    [sender addSubview:highlight];
+    
+    return highlight;
 }
 
-- (void)hide {
-    [self.highlight removeFromSuperview];
+- (void)hide:(UIImageView *)highlight {
+    [highlight removeFromSuperview];
 }
 
 @end
